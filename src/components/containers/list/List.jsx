@@ -1,4 +1,5 @@
 import React from 'react';
+import { NavBar, Icon } from 'antd-mobile';
 
 class Index extends React.Component {
   constructor(props) {
@@ -13,7 +14,21 @@ class Index extends React.Component {
 
   render() {
     return (
-      <p className="test">Hello World</p>
+      <div>
+        <NavBar
+          mode="light"
+          icon={<Icon type="left" />}
+          onLeftClick={() => console.log('onLeftClick')}
+          rightContent={[
+            <Icon key="0" type="search" style={{ marginRight: '16px' }} />,
+            <Icon key="1" type="ellipsis" />,
+          ]}
+        >NavBar</NavBar>
+        <p className="test">Hello World1Hello World1</p>
+        <p className="test">Hello World1Hello World1</p>
+        <div onClick={() => { this.props.history.push('/list'); }}>11</div>
+      </div>
+
     );
   }
 }
