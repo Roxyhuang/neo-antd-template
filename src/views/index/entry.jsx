@@ -1,4 +1,5 @@
 import ReactDOM from 'react-dom';
+import 'assets/css/global.less';
 
 // import { Provider } from 'react-redux';
 // import store from './core/store';

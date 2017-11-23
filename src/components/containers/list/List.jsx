@@ -1,5 +1,7 @@
 import React from 'react';
 import { NavBar, Icon } from 'antd-mobile';
+import CSSModules from 'react-css-modules';
+import s from './list.less';
 
 class Index extends React.Component {
   constructor(props) {
@@ -17,6 +19,7 @@ class Index extends React.Component {
       <div>
         <NavBar
           mode="light"
+          className="am-navbar-title"
           icon={<Icon type="left" />}
           onLeftClick={() => console.log('onLeftClick')}
           rightContent={[
@@ -24,6 +27,7 @@ class Index extends React.Component {
             <Icon key="1" type="ellipsis" />,
           ]}
         >NavBar</NavBar>
+        <div styleName="test">123</div>
         <p className="test">Hello World1Hello World1</p>
         <p className="test">Hello World1Hello World1</p>
         <div onClick={() => { this.props.history.push('/list'); }}>11</div>
@@ -33,4 +37,4 @@ class Index extends React.Component {
   }
 }
 
-export default Index;
+export default CSSModules(Index, s);
