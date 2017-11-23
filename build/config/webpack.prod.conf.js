@@ -7,6 +7,7 @@ import SaveAssetsJson from 'assets-webpack-plugin';
 import ExtractTextPlugin from 'extract-text-webpack-plugin';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
 import StyleLintPlugin from 'stylelint-webpack-plugin';
+import JavaScriptObfuscator from 'webpack-obfuscator';
 // import ZipPlugin from 'zip-webpack-plugin';
 
 import webpackConfig from './webpack.base.conf';
@@ -75,7 +76,27 @@ webpackConfig.plugins.push(
     compress: {
       warnings: false,
       drop_console: config.get('env') === 'production',
+      sequences: true,
+      properties: true,
+      dead_code: true,
+      drop_debugger: true,
+      conditionals: true,
+      unused: true,
+      booleans: true,
+      if_return: true,
+      join_vars: true,
+      loops: true,
+      hoist_funs: true,
+      cascade: true
+    },
+    mangle: { eval: true, toplevel: true, properties: true, },
+    properties: {
+      output: {
+        ascii_only:true,
+        code: true  // optional - faster if false
+      }
     }
+
   }),
   new StyleLintPlugin({
     context: "src",
@@ -143,6 +164,9 @@ if (Object.entries(APP_ENTRY_POINT).length > 1) {
         }),
       )
     }
+    // new JavaScriptObfuscator ({
+    //   rotateUnicodeArray: true
+    // }, [${name}]);
     webpackConfig.plugins.push(
       new HtmlWebpackPlugin({
         filename: `${name}/${name}.html`,
@@ -172,6 +196,9 @@ if (Object.entries(APP_ENTRY_POINT).length > 1) {
 } else  if(Object.entries(APP_ENTRY_POINT).length === 1){
   Object.keys(APP_ENTRY_POINT).forEach(name => {
     webpackConfig.plugins.push(
+      new JavaScriptObfuscator ({
+        rotateUnicodeArray: true
+      }, [`${name}.js`]),
       new HtmlWebpackPlugin({
         filename: `${name}.html`,
         template: 'public/index.html',

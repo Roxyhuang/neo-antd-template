@@ -12,6 +12,7 @@ class Index extends React.Component {
   }
 
   componentDidMount() {
+    console.log('test2>>>>>>>>>>>>>');
   }
 
   render() {
