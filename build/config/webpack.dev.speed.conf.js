@@ -19,11 +19,21 @@ if (process.env.NODE_ENV === 'development') {
 
 const APP_ENTRY_POINT = config.get('appEntry');
 const ANALYZER_BUNDLE = config.get('analyzerBundle');
+const IS_DEBUG = config.get('debug') || false;
+const BUNDLE_LIST = config.get('bundleConfig') || [];
 
 let webpackDevOutput;
 
 let entryConfig = {
 };
+
+entryConfig = Object.assign(entryConfig,BUNDLE_LIST);
+
+let vendorList = config.get('vendorList') || [];
+
+if (IS_DEBUG) {
+  vendorList.unshift('eruda');
+}
 
 // Config for Javascript file
 if (Object.entries(APP_ENTRY_POINT).length > 1) {
@@ -87,10 +97,7 @@ webpackConfig.plugins.push(
     filename: '[name].dll.js',
     path: './assets/js',
     entry: {
-      vendor: [
-        'whatwg-fetch',
-        'eruda',
-      ]
+      vendor: vendorList
     }
   }),
 );
@@ -147,16 +154,20 @@ webpackConfig.module.rules = webpackConfig.module.rules.concat(
 
 if (Object.entries(APP_ENTRY_POINT).length > 1) {
   Object.keys(APP_ENTRY_POINT).forEach((name,index) => {
+    let chunks = [];
+    Object.keys(BUNDLE_LIST).forEach((chunk)=> {
+      chunks.push(chunk);
+    });
     webpackConfig.plugins.push(
       new HtmlWebpackPlugin({
         filename: `${name}/${name}.html`,
         template: 'public/index.html',
         inject: 'true',
-        chunks: [`${name}/assets/js/${name}`, 'vendors'],
+        chunks: [`${name}/assets/js/${name}`, 'vendors', ...chunks],
       }),
     );
     if(index === 0) {
-      const serverIndex = config.get('server-index');
+      const serverIndex = config.get('serverIndex');
       const opnHost = `http://${config.get('host')}:${config.get('port')}`;
 
       webpackConfig.plugins.push(
@@ -167,16 +178,20 @@ if (Object.entries(APP_ENTRY_POINT).length > 1) {
     }
   });
 } else  if(Object.entries(APP_ENTRY_POINT).length === 1){
-  const serverIndex = config.get('server-index');
+  const serverIndex = config.get('serverIndex');
   const opnHost = `http://${config.get('host')}:${config.get('port')}`;
 
   Object.keys(APP_ENTRY_POINT).forEach(name => {
+    let chunks = [];
+    Object.keys(BUNDLE_LIST).forEach((chunk)=> {
+      chunks.push(chunk);
+    });
     webpackConfig.plugins.push(
       new HtmlWebpackPlugin({
         filename: `${name}.html`,
         template: 'public/index.html',
         inject: 'body',
-        chunks: [`assets/js/${name}`, 'vendors'],
+        chunks: [`assets/js/${name}`, 'vendors', ...chunks],
       }),
       new OpenBrowserPlugin({
         url: `${opnHost}/${serverIndex ? serverIndex : `${name}.html`}`,

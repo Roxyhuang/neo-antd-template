@@ -16,10 +16,10 @@ const history = createBrowserHistory();
 // const history = syncHistoryWithStore(browserHistory, store);
 
 // const Index = asyncComponent(() => import('../components/containers/index/Index'));
-// const List = asyncComponent(() => import('../components/containers/list/List'));
+const List = asyncComponent(() => import('../components/containers/list/List'));
 const ListA = asyncComponent(() => import('../components/containers/list/ListA'));
 const ListB = asyncComponent(() => import('../components/containers/list/ListB'));
-const ListC = asyncComponent(() => import('../components/containers/list/ListC'));
+// const ListC = asyncComponent(() => import('../components/containers/list/ListC'));
 
 function mapStyles(styles) {
   return {
@@ -70,9 +70,9 @@ const routes = (
         mapStyles={mapStyles}
         className="switch-wrapper"
       >
-        <Route path="/list-a" component={ListA} />
-        <Route path="/list-b" component={ListB} />
-        <Route path="/list-c" component={ListC} />
+        <Route path="/list-a" component={List} />
+        <Route path="/list-b" component={ListA} />
+        <Route path="/list-c" component={ListB} />
       </AnimatedSwitch>
     </div>
   </Router>

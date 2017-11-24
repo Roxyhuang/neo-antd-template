@@ -121,7 +121,7 @@ const webpackConfig = {
         NODE_ENV: JSON.stringify(config.get('env')),
         FETCH_ENV: JSON.stringify(config.get('fetchConfig')),
         APP_VERSION : JSON.stringify(process.env.PACKAGE_VERSION),
-        DEBUG: config.get('env') !== 'production' ? JSON.stringify(config.get('debug')) : false,
+        DEBUG: JSON.stringify(config.get('debug') || false),
       },
     }),
   ],

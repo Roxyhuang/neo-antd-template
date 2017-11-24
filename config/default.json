@@ -5,14 +5,14 @@
   "port": "3000",
   "jsSourcePath": "src",
   "distDirectory": "dist",
-  "server-index": "index.html",
-  "bundleConfig": [
-    {
-
-    }
-  ],
-  "vendorConfig": [
-
+  "serverIndex": "index.html",
+  "debug": false,
+  "bundleConfig":
+    { "assets/js/static": "./src/assets/js/static.js","assets/js/test": "./src/assets/js/test.js" }
+  ,
+  "vendorList": [
+    "whatwg-fetch",
+    "react-router-transition"
   ],
   "fetchConfig": {
     "isMock": false,
@@ -28,5 +28,5 @@
 //    "project": "./src/containers/project1/Entry.jsx",
 //    "project2": "./src/containers/project2/Entry.jsx"
   }
-//  "server-index": "app/app.html"
+//  "serverIndex": "app/app.html"
 }

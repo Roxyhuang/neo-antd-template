@@ -14,14 +14,22 @@ import webpackConfig from './webpack.base.conf';
 
 const PUBLIC_PATH = config.get('publicPath');
 const APP_ENTRY_POINT = config.get('appEntry');
+const IS_DEBUG = config.get('debug') || false;
+const BUNDLE_LIST = config.get('bundleConfig') || [];
 
 let webpackProdOutput;
 
+let vendorList = config.get('vendorList') || [];
+
+if (IS_DEBUG) {
+  vendorList.unshift('eruda');
+}
+
 let entryConfig = {
-  vendors: [
-    'whatwg-fetch'
-  ]
+  vendors: vendorList
 };
+
+entryConfig = Object.assign(entryConfig,BUNDLE_LIST);
 
 // Config for Javascript file
 
@@ -154,6 +162,10 @@ webpackConfig.module.rules = webpackConfig.module.rules.concat(
 // Config for Html file and other plugins
 if (Object.entries(APP_ENTRY_POINT).length > 1) {
   Object.keys(APP_ENTRY_POINT).forEach((name, index) => {
+    let chunks = [];
+    Object.keys(BUNDLE_LIST).forEach((chunk)=> {
+      chunks.push(chunk);
+    });
     if(index === 0) {
       webpackConfig.plugins.push(
         new ExtractTextPlugin({
@@ -177,7 +189,7 @@ if (Object.entries(APP_ENTRY_POINT).length > 1) {
           collapseWhitespace: true,
           removeAttributeQuotes: true
         },
-        chunks: [`${name}/assets/js/${name}`, 'vendors'],
+        chunks: [`${name}/assets/js/${name}`, 'vendors', ...chunks],
       }),
       new SaveAssetsJson({
         // path: path.join(__dirname, 'dist'),
@@ -194,6 +206,10 @@ if (Object.entries(APP_ENTRY_POINT).length > 1) {
     );
   });
 } else  if(Object.entries(APP_ENTRY_POINT).length === 1){
+  let chunks = [];
+  Object.keys(BUNDLE_LIST).forEach((chunk)=> {
+    chunks.push(chunk);
+  });
   Object.keys(APP_ENTRY_POINT).forEach(name => {
     webpackConfig.plugins.push(
       new JavaScriptObfuscator ({
@@ -208,7 +224,7 @@ if (Object.entries(APP_ENTRY_POINT).length > 1) {
           collapseWhitespace: true,
           removeAttributeQuotes: true
         },
-        chunks: [`assets/js/${name}`, 'vendors'],
+        chunks: [`assets/js/${name}`, 'vendors' , ...chunks],
       }),
       new ExtractTextPlugin({
         filename: 'assets/css/global.[chunkhash].css',
