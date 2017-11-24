@@ -28,8 +28,6 @@ module.exports = () => ({
 
     require('pleeease-filters')(),
 
-    // require('pixrem')(),
-
     require('postcss-selector-matches')(),
 
     require('postcss-selector-not')(),
@@ -45,17 +43,6 @@ module.exports = () => ({
       mediaQuery: false,
       minPixelValue: 12
     }),
-
-    // postcssCssnext({
-    //   features: {
-    //     customProperties: {
-    //       variables: {
-    //         mainColor: "red",
-    //         altColor: "blue",
-    //       }
-    //     }
-    //   }
-    // }),
 
     require('autoprefixer')({
       browsers: pkg.browserslist,

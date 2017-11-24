@@ -5,15 +5,28 @@
   "port": "3000",
   "jsSourcePath": "src",
   "distDirectory": "dist",
+  "server-index": "index.html",
+  "bundleConfig": [
+    {
+
+    }
+  ],
+  "vendorConfig": [
+
+  ],
+  "fetchConfig": {
+    "isMock": false,
+    "fetchUrl": "http://localhost:8888"
+  },
+  "mockConfig": {
+    "mockUrl": "",
+    "port": 8888
+  },
   "appEntry": {
     "index": "./src/views/index/entry.jsx"
 //    "app": "./src/Main.jsx",
 //    "project": "./src/containers/project1/Entry.jsx",
 //    "project2": "./src/containers/project2/Entry.jsx"
-  },
-//  "server-index": "app/app.html"
-  "server-index": "index.html",
-  "mockConfig": {
-    "port": 8888
   }
+//  "server-index": "app/app.html"
 }

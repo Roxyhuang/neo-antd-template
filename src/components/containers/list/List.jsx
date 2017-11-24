@@ -12,7 +12,7 @@ class Index extends React.Component {
   }
 
   componentDidMount() {
-    console.log('test2>>>>>>>>>>>>>');
+    // TODO
   }
 
   render() {
@@ -31,7 +31,10 @@ class Index extends React.Component {
         <div styleName="test">123</div>
         <p className="test">Hello World1Hello World1</p>
         <p className="test">Hello World1Hello World1</p>
-        <div onClick={() => { this.props.history.push('/list'); }}>11</div>
+        <div onClick={() => { this.props.history.push('/list-a'); }}>ListA</div>
+        <div onClick={() => { this.props.history.push('/list-b'); }}>ListB</div>
+        <div onClick={() => { this.props.history.push('/list-c'); }}>ListC</div>
+
       </div>
 
     );
