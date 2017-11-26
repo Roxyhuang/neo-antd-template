@@ -172,8 +172,8 @@ webpackConfig.module.rules = webpackConfig.module.rules.concat(
 
 if (Object.entries(APP_ENTRY_POINT).length > 1) {
   Object.keys(APP_ENTRY_POINT).forEach((name,index) => {
+    let chunks = [];
     Object.keys(APP_ENTRY_POINT).forEach(name => {
-      let chunks = [];
       Object.keys(BUNDLE_LIST).forEach((chunk)=> {
         chunks.push(chunk);
       });

@@ -16,6 +16,9 @@ const PUBLIC_PATH = config.get('publicPath');
 const APP_ENTRY_POINT = config.get('appEntry');
 const IS_DEBUG = config.get('debug') || false;
 const BUNDLE_LIST = config.get('bundleConfig') || [];
+const IS_UGLIFYJS = config.get('env') !== 'release';
+
+console.log(IS_UGLIFYJS);
 
 let webpackProdOutput;
 
@@ -176,9 +179,9 @@ if (Object.entries(APP_ENTRY_POINT).length > 1) {
         }),
       )
     }
-    // new JavaScriptObfuscator ({
-    //   rotateUnicodeArray: true
-    // }, [${name}]);
+    new JavaScriptObfuscator ({
+      rotateUnicodeArray: true
+    }, [`${name}/assets/js/${name}.js`]),
     webpackConfig.plugins.push(
       new HtmlWebpackPlugin({
         filename: `${name}/${name}.html`,
