@@ -23,13 +23,13 @@ const APP_ENTRY_POINT = config.get('appEntry');
 const ANALYZER_BUNDLE = config.get('analyzerBundle');
 const IS_DEBUG = config.get('debug') || false;
 const BUNDLE_LIST = config.get('bundleConfig') || [];
+const TEMPLATE_PAGE = config.get('templatePage') || 'public/index.html';
 
 let webpackDevOutput;
 
-let entryConfig = {
-};
+let entryConfig = {};
 
-entryConfig = Object.assign(entryConfig,BUNDLE_LIST);
+entryConfig = Object.assign(entryConfig, BUNDLE_LIST);
 
 let vendorList = config.get('vendorList') || [];
 
@@ -38,48 +38,26 @@ if (IS_DEBUG) {
 }
 
 // Config for Javascript file
-if (Object.entries(APP_ENTRY_POINT).length > 1) {
 
-  Object.entries(APP_ENTRY_POINT).forEach(item => {
-    Object.assign(entryConfig, {[`${item[0]}/assets/js/${item[0]}`]: [
-      'babel-polyfill',
-      'webpack-hot-middleware/client?reload=true',
-      'webpack/hot/only-dev-server',
-      item[1]
-    ]});
-  });
-
-} else if(Object.entries(APP_ENTRY_POINT).length === 1){
-  Object.entries(APP_ENTRY_POINT).forEach(item => {
-    Object.assign(entryConfig, {[`assets/js/${item[0]}`]: [
+Object.entries(APP_ENTRY_POINT).forEach(item => {
+  Object.assign(entryConfig, {
+    [`assets/js/${item[0]}`]: [
       'babel-polyfill',
       'webpack-hot-middleware/client?reload=true',
       'webpack/hot/only-dev-server',
       item[1],
-    ]});
+    ]
   });
-} else {
-  console.log(chalk.red('You must define a entry'));
-}
+});
 
 //Config for output
 
-if (Object.entries(APP_ENTRY_POINT).length > 1) {
-  webpackDevOutput = {
-    publicPath: `${PUBLIC_PATH}/`,
-    filename: '[name].[chunkhash].js',
-    chunkFilename: "[id].[chunkhash].js",
-  };
+webpackDevOutput = {
+  publicPath: `${PUBLIC_PATH}/`,
+  filename: '[name].[chunkhash].js',
+  chunkFilename: "[id].[chunkhash].js",
+};
 
-} else  if (Object.entries(APP_ENTRY_POINT).length === 1){
-  webpackDevOutput = {
-    publicPath: `${PUBLIC_PATH}/`,
-    filename: '[name].[chunkhash].js',
-    chunkFilename: "[id].[chunkhash].js",
-  };
-} else {
-  console.log(chalk.red('You must define a entry'));
-}
 
 webpackConfig.output = Object.assign(webpackConfig.output, webpackDevOutput);
 
@@ -100,12 +78,12 @@ webpackConfig.plugins.push(
     reload: false,
   }),
   new StyleLintPlugin({
-    context: "src",
-    configFile: '.stylelintrc.js',
-    files: '**/*.less',
-    failOnError: false,
-    quiet: false,
-    syntax: 'less'
+      context: "src",
+      configFile: '.stylelintrc.js',
+      files: '**/*.less',
+      failOnError: false,
+      quiet: false,
+      syntax: 'less'
     }
   ),
   new AutoDllPlugin({
@@ -141,11 +119,11 @@ webpackConfig.module.rules = webpackConfig.module.rules.concat(
       {
         loader: "less-loader?modules&localIdentName=[name]__[local]-[hash:base64:5]"
       },
-      ],
+    ],
   },
   {
     test: /\.css|less$/,
-    include: [path.resolve('node_modules'), path.resolve('src/assets/css/mod_css')  ],
+    include: [path.resolve('node_modules'), path.resolve('src/assets/css/mod_css')],
     use: [
       {
         loader: "style-loader?sourceMap=true"
@@ -169,61 +147,30 @@ webpackConfig.module.rules = webpackConfig.module.rules.concat(
   },
 );
 
+const serverIndex = config.get('serverIndex');
+const opnHost = `http://${config.get('host')}:${config.get('port')}`;
 
-if (Object.entries(APP_ENTRY_POINT).length > 1) {
-  Object.keys(APP_ENTRY_POINT).forEach((name,index) => {
-    let chunks = [];
-    Object.keys(APP_ENTRY_POINT).forEach(name => {
-      Object.keys(BUNDLE_LIST).forEach((chunk)=> {
-        chunks.push(chunk);
-      });
-    });
-    webpackConfig.plugins.push(
-      new HtmlWebpackPlugin({
-        filename: `${name}/${name}.html`,
-        template: 'public/index.html',
-        inject: 'true',
-        chunks: [`${name}/assets/js/${name}`, 'vendors', ...chunks],
-      }),
-    );
-    if(index === 0) {
-      const serverIndex = config.get('serverIndex');
-      const opnHost = `http://${config.get('host')}:${config.get('port')}`;
-
-      webpackConfig.plugins.push(
-        new OpenBrowserPlugin({
-          url: `${opnHost}/${serverIndex ? serverIndex : `${name}/${name}.html`}`,
-        }),
-      )
-    }
+Object.keys(APP_ENTRY_POINT).forEach(name => {
+  let chunks = [];
+  Object.keys(BUNDLE_LIST).forEach((chunk) => {
+    chunks.push(chunk);
   });
-} else  if(Object.entries(APP_ENTRY_POINT).length === 1){
-  const serverIndex = config.get('serverIndex');
-  const opnHost = `http://${config.get('host')}:${config.get('port')}`;
+  webpackConfig.plugins.push(
+    new HtmlWebpackPlugin({
+      filename: `${name}.html`,
+      template: TEMPLATE_PAGE,
+      inject: 'body',
+      chunks: [`assets/js/${name}`, 'vendors', ...chunks],
+    }),
+    new OpenBrowserPlugin({
+      url: `${opnHost}/${serverIndex ? serverIndex : `${name}.html`}`,
+    }),
+  );
+});
 
-  Object.keys(APP_ENTRY_POINT).forEach(name => {
-    let chunks = [];
-    Object.keys(BUNDLE_LIST).forEach((chunk)=> {
-      chunks.push(chunk);
-    });
-    webpackConfig.plugins.push(
-      new HtmlWebpackPlugin({
-        filename: `${name}.html`,
-        template: 'public/index.html',
-        inject: 'body',
-        chunks: [`assets/js/${name}`, 'vendors', ...chunks],
-      }),
-      new OpenBrowserPlugin({
-        url: `${opnHost}/${serverIndex ? serverIndex : `${name}.html`}`,
-      }),
-    );
-  });
-} else {
-  console.log(chalk.red('You must define a entry'));
-}
 
 if (ANALYZER_BUNDLE) {
-const BundleAnalyzerPlugin  = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+  const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
   webpackConfig.plugins.push(
     new BundleAnalyzerPlugin({
       analyzerMode: 'server',

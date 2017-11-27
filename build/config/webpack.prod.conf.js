@@ -17,6 +17,7 @@ const APP_ENTRY_POINT = config.get('appEntry');
 const IS_DEBUG = config.get('debug') || false;
 const BUNDLE_LIST = config.get('bundleConfig') || [];
 const IS_UGLIFYJS = config.get('env') !== 'release';
+const TEMPLATE_PAGE = config.get('templatePage') || 'public/index.html';
 
 console.log(IS_UGLIFYJS);
 
@@ -32,41 +33,21 @@ let entryConfig = {
   vendors: vendorList
 };
 
-entryConfig = Object.assign(entryConfig,BUNDLE_LIST);
+entryConfig = Object.assign(entryConfig, BUNDLE_LIST);
 
 // Config for Javascript file
 
-if (Object.entries(APP_ENTRY_POINT).length > 1) {
+Object.entries(APP_ENTRY_POINT).forEach(item => {
+  Object.assign(entryConfig, {[`assets/js/${item[0]}`]: [item[1]]});
+});
 
-  Object.entries(APP_ENTRY_POINT).forEach(item => {
-    Object.assign(entryConfig, {[`${item[0]}/assets/js/${item[0]}`]: [item[1]]});
-  });
-
-} else if(Object.entries(APP_ENTRY_POINT).length === 1){
-  Object.entries(APP_ENTRY_POINT).forEach(item => {
-    Object.assign(entryConfig, {[`assets/js/${item[0]}`]: [item[1]]});
-  });
-} else {
-  console.log(chalk.red('You must define a entry'));
-}
 //Config for output
 
-if (Object.entries(APP_ENTRY_POINT).length > 1) {
-  webpackProdOutput = {
-    publicPath: `${PUBLIC_PATH}/`,
-    filename: '[name].[chunkhash].js',
-    chunkFilename: `${Object.entries(APP_ENTRY_POINT)[0][0]}/assets/js/[id].[chunkhash].js`,
-  };
-
-} else  if (Object.entries(APP_ENTRY_POINT).length === 1){
-  webpackProdOutput = {
-    publicPath: `${PUBLIC_PATH}/`,
-    filename: '[name].[chunkhash].js',
-    chunkFilename: "assets/js/[id].[chunkhash].js",
-  };
-} else {
-  console.log(chalk.red('You must define a entry'));
-}
+webpackProdOutput = {
+  publicPath: `${PUBLIC_PATH}/`,
+  filename: '[name].[chunkhash].js',
+  chunkFilename: "assets/js/[id].[chunkhash].js",
+};
 
 webpackConfig.output = Object.assign(webpackConfig.output, webpackProdOutput);
 
@@ -82,33 +63,6 @@ webpackConfig.plugins.push(
     debug: false,
   }),
   new webpack.IgnorePlugin(/un~$/),
-  new webpack.optimize.UglifyJsPlugin({
-    sourceMap: true,
-    compress: {
-      warnings: false,
-      drop_console: config.get('env') === 'production',
-      sequences: true,
-      properties: true,
-      dead_code: true,
-      drop_debugger: true,
-      conditionals: true,
-      unused: true,
-      booleans: true,
-      if_return: true,
-      join_vars: true,
-      loops: true,
-      hoist_funs: true,
-      cascade: true
-    },
-    mangle: { eval: true, toplevel: true, properties: true, },
-    properties: {
-      output: {
-        ascii_only:true,
-        code: true  // optional - faster if false
-      }
-    }
-
-  }),
   new StyleLintPlugin({
     context: "src",
     configFile: '.stylelintrc.js',
@@ -118,6 +72,37 @@ webpackConfig.plugins.push(
     syntax: 'less'
   }),
 );
+
+if (IS_UGLIFYJS) {
+  webpackConfig.plugins.push(
+    new webpack.optimize.UglifyJsPlugin({
+      sourceMap: true,
+      compress: {
+        warnings: false,
+        drop_console: config.get('env') === 'production',
+        sequences: true,
+        properties: true,
+        dead_code: true,
+        drop_debugger: true,
+        conditionals: true,
+        unused: true,
+        booleans: true,
+        if_return: true,
+        join_vars: true,
+        loops: true,
+        hoist_funs: true,
+        cascade: true
+      },
+      mangle: {eval: true, toplevel: true, properties: true,},
+      properties: {
+        output: {
+          ascii_only: true,
+          code: true  // optional - faster if false
+        }
+      }
+    }),
+  );
+}
 
 webpackConfig.module.rules = webpackConfig.module.rules.concat(
   {
@@ -163,94 +148,50 @@ webpackConfig.module.rules = webpackConfig.module.rules.concat(
 );
 
 // Config for Html file and other plugins
-if (Object.entries(APP_ENTRY_POINT).length > 1) {
-  Object.keys(APP_ENTRY_POINT).forEach((name, index) => {
-    let chunks = [];
-    Object.keys(BUNDLE_LIST).forEach((chunk)=> {
-      chunks.push(chunk);
-    });
-    if(index === 0) {
-      webpackConfig.plugins.push(
-        new ExtractTextPlugin({
+let chunks = [];
+Object.keys(BUNDLE_LIST).forEach((chunk) => {
+  chunks.push(chunk);
+});
+Object.keys(APP_ENTRY_POINT).forEach(name => {
 
-          filename: `${name}/assets/css/global.[chunkhash].css`,
-          disable: false,
-          allChunks: true,
-        }),
-      )
-    }
-    new JavaScriptObfuscator ({
-      rotateUnicodeArray: true
-    }, [`${name}/assets/js/${name}.js`]),
+  if (IS_UGLIFYJS) {
     webpackConfig.plugins.push(
-      new HtmlWebpackPlugin({
-        filename: `${name}/${name}.html`,
-        template: 'public/index.html',
-        inject:'true',
-        minify: {
-          removeComments: true,
-          collapseWhitespace: true,
-          removeAttributeQuotes: true
-        },
-        chunks: [`${name}/assets/js/${name}`, 'vendors', ...chunks],
-      }),
-      new SaveAssetsJson({
-        // path: path.join(__dirname, 'dist'),
-        filename: `dist/${name}/assets/assets.json`,
-        prettyPrint: true,
-        metadata: {
-          version: process.env.PACKAGE_VERSION,
-        },
-      }),
-      new CopyWebpackPlugin([{
-        from: 'public/assets/',
-        to: `${name}/assets/`
-      }]),
-    );
-  });
-} else  if(Object.entries(APP_ENTRY_POINT).length === 1){
-  let chunks = [];
-  Object.keys(BUNDLE_LIST).forEach((chunk)=> {
-    chunks.push(chunk);
-  });
-  Object.keys(APP_ENTRY_POINT).forEach(name => {
-    webpackConfig.plugins.push(
-      new JavaScriptObfuscator ({
+      new JavaScriptObfuscator({
         rotateUnicodeArray: true
-      }, [`${name}.js`]),
-      new HtmlWebpackPlugin({
-        filename: `${name}.html`,
-        template: 'public/index.html',
-        inject:'true',
-        minify: {
-          removeComments: true,
-          collapseWhitespace: true,
-          removeAttributeQuotes: true
-        },
-        chunks: [`assets/js/${name}`, 'vendors' , ...chunks],
-      }),
-      new ExtractTextPlugin({
-        filename: 'assets/css/global.[chunkhash].css',
-        disable: false,
-        allChunks: true,
-      }),
-      new SaveAssetsJson({
-        // path: path.join(__dirname, 'dist'),
-        filename: 'dist/assets/assets.json',
-        prettyPrint: true,
-        metadata: {
-          version: process.env.PACKAGE_VERSION,
-        },
-      }),
-      new CopyWebpackPlugin([{
-        from: 'public/assets/',
-        to: 'assets/'
-      }]),
+      }, [`${name}.js`])
     );
-  });
-} else {
-  console.log(chalk.red('You must define a entry'));
-}
+  }
+  webpackConfig.plugins.push(
+    new HtmlWebpackPlugin({
+      filename: `${name}.html`,
+      template: TEMPLATE_PAGE,
+      inject: 'true',
+      minify: {
+        removeComments: true,
+        collapseWhitespace: true,
+        removeAttributeQuotes: true
+      },
+      chunks: [`assets/js/${name}`, 'vendors', ...chunks],
+    }),
+    new ExtractTextPlugin({
+      filename: 'assets/css/global.[chunkhash].css',
+      disable: false,
+      allChunks: true,
+    }),
+    new SaveAssetsJson({
+      // path: path.join(__dirname, 'dist'),
+      filename: 'dist/assets/assets.json',
+      prettyPrint: true,
+      metadata: {
+        version: process.env.PACKAGE_VERSION,
+      },
+    }),
+    new CopyWebpackPlugin([{
+      from: 'public/assets/',
+      to: 'assets/'
+    }]),
+  );
+});
 
 // if (config.get('env') === 'production') {
 //   webpackConfig.plugins.push(
