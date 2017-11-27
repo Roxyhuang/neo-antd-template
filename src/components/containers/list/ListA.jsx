@@ -17,9 +17,7 @@ class ListA extends React.Component {
   render() {
     return (
       <div>
-        <div onClick={() => { this.props.history.push('/list-a'); }}>ListA</div>
-        <div onClick={() => { this.props.history.push('/list-b'); }}>ListB</div>
-        <div onClick={() => { this.props.history.push('/list-c'); }}>ListC</div>
+        <div>A</div>
       </div>
 
     );

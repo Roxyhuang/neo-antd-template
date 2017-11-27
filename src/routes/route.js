@@ -2,8 +2,9 @@ import React from 'react';
 import {
   Router,
   Route,
-  Link,
+  // Link,
 } from 'react-router-dom';
+import { NavBar, Icon, Tabs, Badge } from 'antd-mobile';
 import { spring, AnimatedSwitch } from 'react-router-transition';
 import createBrowserHistory from 'history/createBrowserHistory';
 import { asyncComponent } from '../utils/asyncComponent';
@@ -16,10 +17,16 @@ const history = createBrowserHistory();
 // const history = syncHistoryWithStore(browserHistory, store);
 
 // const Index = asyncComponent(() => import('../components/containers/index/Index'));
-const List = asyncComponent(() => import('../components/containers/list/List'));
+// const List = asyncComponent(() => import('../components/containers/list/List'));
 const ListA = asyncComponent(() => import('../components/containers/list/ListA'));
 const ListB = asyncComponent(() => import('../components/containers/list/ListB'));
-// const ListC = asyncComponent(() => import('../components/containers/list/ListC'));
+const ListC = asyncComponent(() => import('../components/containers/list/ListC'));
+
+const tabs = [
+  { title: <Badge text={'3'} onClick={(e) => { e.stopPropagation(); history.push('/list-a'); }}>List A</Badge> },
+  { title: <Badge text={'今日(20)'} onClick={(e) => { e.stopPropagation(); history.push('/list-b'); }}>List B</Badge> },
+  { title: <Badge dot onClick={(e) => { e.stopPropagation(); history.push('/list-c'); }}>List C</Badge> },
+];
 
 function mapStyles(styles) {
   return {
@@ -58,11 +65,20 @@ const bounceTransition = {
 const routes = (
   <Router history={history} key={Math.random()}>
     <div>
-      <ul>
-        <li><Link to="/list-a">ListA</Link></li>
-        <li><Link to="/list-b">ListB</Link></li>
-        <li><Link to="/list-c">ListC</Link></li>
-      </ul>
+      <NavBar
+        mode="dark"
+        leftContent="Back"
+        rightContent={[
+          <Icon key="0" type="search" style={{ marginRight: '16px' }} />,
+          <Icon key="1" type="ellipsis" />,
+        ]}
+      >NavBar</NavBar>
+      <Tabs
+        tabs={tabs}
+        initialPage={0}
+        onChange={(tab, index) => { console.log('onChange', index, tab); }}
+        onTabClick={(tab, index) => { console.log('onTabClick', index, tab); }}
+      />
       <AnimatedSwitch
         atEnter={bounceTransition.atEnter}
         atLeave={bounceTransition.atLeave}
@@ -70,9 +86,9 @@ const routes = (
         mapStyles={mapStyles}
         className="switch-wrapper"
       >
-        <Route path="/list-a" component={List} />
-        <Route path="/list-b" component={ListA} />
-        <Route path="/list-c" component={ListB} />
+        <Route path="/list-a" component={ListA} />
+        <Route path="/list-b" component={ListB} />
+        <Route path="/list-c" component={ListC} />
       </AnimatedSwitch>
     </div>
   </Router>
