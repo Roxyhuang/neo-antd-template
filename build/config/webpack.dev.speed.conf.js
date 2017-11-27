@@ -17,6 +17,7 @@ if (process.env.NODE_ENV === 'development') {
   PUBLIC_PATH = config.get('publicPath');
 }
 
+const theme = require('../../package.json').theme;
 const APP_ENTRY_POINT = config.get('appEntry');
 const ANALYZER_BUNDLE = config.get('analyzerBundle');
 const IS_DEBUG = config.get('debug') || false;
@@ -121,7 +122,8 @@ webpackConfig.module.rules = webpackConfig.module.rules.concat(
         }
       },
       {
-        loader: "less-loader"
+        loader: "less-loader",
+        options: {modifyVars: theme}
       }
     ],
   },

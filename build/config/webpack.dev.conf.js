@@ -19,6 +19,7 @@ if (process.env.NODE_ENV === 'development') {
   PUBLIC_PATH = config.get('publicPath');
 }
 
+const theme = require('../../package.json').theme;
 const APP_ENTRY_POINT = config.get('appEntry');
 const ANALYZER_BUNDLE = config.get('analyzerBundle');
 const IS_DEBUG = config.get('debug') || false;
@@ -117,7 +118,7 @@ webpackConfig.module.rules = webpackConfig.module.rules.concat(
         }
       },
       {
-        loader: "less-loader?modules&localIdentName=[name]__[local]-[hash:base64:5]"
+        loader: "less-loader?modules&localIdentName=[name]__[local]-[hash:base64:5]",
       },
     ],
   },
@@ -141,7 +142,8 @@ webpackConfig.module.rules = webpackConfig.module.rules.concat(
         }
       },
       {
-        loader: "less-loader?sourceMap=true"
+        loader: "less-loader?sourceMap=true",
+        options: {modifyVars: theme}
       }
     ],
   },

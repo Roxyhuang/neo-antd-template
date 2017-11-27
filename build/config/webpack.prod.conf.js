@@ -12,14 +12,13 @@ import JavaScriptObfuscator from 'webpack-obfuscator';
 
 import webpackConfig from './webpack.base.conf';
 
+const theme = require('../../package.json').theme;
 const PUBLIC_PATH = config.get('publicPath');
 const APP_ENTRY_POINT = config.get('appEntry');
 const IS_DEBUG = config.get('debug') || false;
 const BUNDLE_LIST = config.get('bundleConfig') || [];
 const IS_UGLIFYJS = config.get('env') !== 'release';
 const TEMPLATE_PAGE = config.get('templatePage') || 'public/index.html';
-
-console.log(IS_UGLIFYJS);
 
 let webpackProdOutput;
 
@@ -141,7 +140,11 @@ webpackConfig.module.rules = webpackConfig.module.rules.concat(
             }
           }
         },
-        'less-loader?sourceMap=true',
+        {
+          loader:  'less-loader?sourceMap=true',
+          options: {modifyVars: theme}
+        }
+
       ]
     })
   },
