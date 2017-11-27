@@ -52,7 +52,7 @@ Object.entries(APP_ENTRY_POINT).forEach(item => {
 webpackDevOutput = {
   publicPath: `${PUBLIC_PATH}/`,
   filename: '[name].[chunkhash].js',
-  chunkFilename: "[id].[chunkhash].js",
+  chunkFilename: "assets/js/[id].[chunkhash].js",
 };
 
 webpackConfig.output = Object.assign(webpackConfig.output, webpackDevOutput);

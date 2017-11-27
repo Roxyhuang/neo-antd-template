@@ -55,13 +55,7 @@ app.use(require('webpack-hot-middleware')(compiler, {
   heartbeat: 1000,
 }));
 
-if (Object.entries(APP_ENTRY_POINT).length > 1) {
-  Object.keys(APP_ENTRY_POINT).forEach((name) => {
-    app.use(`/${name}/assets`, express.static('public/assets'));
-  });
-} else {
-  app.use('/assets', express.static('public/assets'));
-}
+app.use('/assets', express.static('public/assets'));
 
 if (require.main === module) {
   const server = http.createServer(app);
