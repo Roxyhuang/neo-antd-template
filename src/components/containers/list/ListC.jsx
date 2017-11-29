@@ -17,7 +17,7 @@ class ListC extends React.Component {
   render() {
     return (
       <div>
-        <div>C</div>
+        <div className={s.listC}>C</div>
       </div>
 
     );

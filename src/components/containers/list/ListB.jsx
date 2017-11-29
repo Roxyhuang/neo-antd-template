@@ -17,7 +17,7 @@ class ListB extends React.Component {
   render() {
     return (
       <div>
-        <div>B</div>
+        <div className={s.listB}>B</div>
       </div>
 
     );
