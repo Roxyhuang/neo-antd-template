@@ -2,6 +2,7 @@ import React from 'react';
 import {
   Router,
   Route,
+  Redirect,
   // Link,
 } from 'react-router-dom';
 import { spring, AnimatedSwitch } from 'react-router-transition';
@@ -59,9 +60,11 @@ const routes = (
         mapStyles={mapStyles}
         className="switch-wrapper"
       >
-        <Route exact path="/" component={ListA} />
+        <Redirect exact from={'/' || '/index.html'} to="/list-a" />
+        <Route path="/list-a" component={ListA} />
         <Route path="/list-b" component={ListB} />
         <Route path="/list-c" component={ListC} />
+        <Redirect exact from="/index.html" to="/list-a" />
         <Route component={noMatch} />
       </AnimatedSwitch>
     </Layout>

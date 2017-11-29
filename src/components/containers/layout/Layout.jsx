@@ -6,12 +6,12 @@ import s from './layout.less';
 const Layout = (props) => {
   const history = props.history || {};
   const tabs = [
-    { title: <Badge text={'3'}>List A</Badge>, url: '/' },
+    { title: <Badge text={'3'}>List A</Badge>, url: '/list-a' },
     { title: <Badge text={'今日(20)'}>List B</Badge>, url: '/list-b' },
     { title: <Badge dot>List C</Badge>, url: '/list-c' },
   ];
   const tabMap = {
-    '/': 0,
+    '/list-a': 0,
     '/list-b': 1,
     '/list-c': 2,
   };
