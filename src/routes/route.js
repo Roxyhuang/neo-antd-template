@@ -19,6 +19,7 @@ const history = createBrowserHistory();
 const ListA = asyncComponent(() => import('../components/containers/list/ListA'));
 const ListB = asyncComponent(() => import('../components/containers/list/ListB'));
 const ListC = asyncComponent(() => import('../components/containers/list/ListC'));
+const noMatch = asyncComponent(() => import('../components/containers/no-match/noMatch'));
 
 function mapStyles(styles) {
   return {
@@ -61,6 +62,7 @@ const routes = (
         <Route exact path="/" component={ListA} />
         <Route path="/list-b" component={ListB} />
         <Route path="/list-c" component={ListC} />
+        <Route component={noMatch} />
       </AnimatedSwitch>
     </Layout>
   </Router>
